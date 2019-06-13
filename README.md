@@ -1,62 +1,23 @@
 # egg-utils
 
-[![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Test coverage][codecov-image]][codecov-url]
-[![David deps][david-image]][david-url]
-[![Known Vulnerabilities][snyk-image]][snyk-url]
-[![npm download][download-image]][download-url]
-
-[npm-image]: https://img.shields.io/npm/v/egg-utils.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/egg-utils
-[travis-image]: https://img.shields.io/travis/eggjs/egg-utils.svg?style=flat-square
-[travis-url]: https://travis-ci.org/eggjs/egg-utils
-[codecov-image]: https://img.shields.io/codecov/c/github/eggjs/egg-utils.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/eggjs/egg-utils?branch=master
-[david-image]: https://img.shields.io/david/eggjs/egg-utils.svg?style=flat-square
-[david-url]: https://david-dm.org/eggjs/egg-utils
-[snyk-image]: https://snyk.io/test/npm/egg-utils/badge.svg?style=flat-square
-[snyk-url]: https://snyk.io/test/npm/egg-utils
-[download-image]: https://img.shields.io/npm/dm/egg-utils.svg?style=flat-square
-[download-url]: https://npmjs.org/package/egg-utils
-
 <!--
 Description here.
 -->
 
-## Install
+### 依赖的插件
 
-```bash
-$ npm i egg-utils --save
-```
+- circuit-fuses v4.x
+- request v2.x
 
-## Usage
+## 开启插件
 
 ```js
-// {app_root}/config/plugin.js
+// config/plugin.js
 exports.utils = {
   enable: true,
   package: 'egg-utils',
 };
 ```
-
-## Configuration
-
-```js
-// {app_root}/config/config.default.js
-exports.utils = {
-};
-```
-
-see [config/config.default.js](config/config.default.js) for more detail.
-
-## Example
-
-<!-- example here -->
-
-## Questions & Suggestions
-
-Please open an issue [here](https://github.com/eggjs/egg/issues).
 
 ## License
 
