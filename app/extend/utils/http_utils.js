@@ -15,6 +15,20 @@ class HttpUtils {
     this.logger = logger;
   }
 
+  _getVerbFn(verb) {
+    if (!verb) verb = 'GET';
+    const command = request[(verb + '').trim().toLowerCase()];
+
+    if (!command) {
+      throw new Error('unsupported verb for http request');
+    }
+    return command;
+  }
+
+  _proxyCommand(command) {
+    return new Breaker(command);
+  }
+
   /**
    * request + 熔断器
    * @param {String} verb 动词
@@ -23,39 +37,13 @@ class HttpUtils {
    * @return {Promise<void>}
    */
   async runCircuitVerb(verb = 'GET', url, options) {
-    let command;
-    switch ((verb + '').toUpperCase()) {
-      case 'GET':
-        command = request.get;
-        break;
-      case 'POST':
-        command = request.post;
-        break;
-      case 'PUT':
-        command = request.put;
-        break;
-      case 'DELETE':
-        command = request.delete;
-        break;
-      case 'HEAD':
-        command = request.head;
-        break;
-      case 'PATCH':
-        command = request.patch;
-        break;
-      case 'OPTIONS':
-        command = request.options;
-        break;
-      default:
-        command = request.get;
-    }
-
-    const breaker = new Breaker(command);
+    const command = this._getVerbFn(verb);
+    const breaker = this._proxyCommand(command);
     try {
       this.logger.debug(`外部请求url:${url},options:${JSON.stringify(options)}`);
       const res = await breaker.runCommand(url, options);
       if (res.statusCode >= 200 && res.statusCode < 300) return res.body;
-      throw new ResponseError('', res);
+      throw new ResponseError('响应错误', res);
     } catch (err) {
       // TODO:: 有关降级的策略 err.message = "CircuitBreaker Open"
       /* If the circuit is open the command is not run,
