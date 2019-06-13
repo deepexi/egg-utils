@@ -3,31 +3,24 @@
 const request = require('request');
 const Breaker = require('circuit-fuses').breaker;
 
+class ResponseError extends Error {
+  constructor(msg, res) {
+    super(msg);
+    this.response = res;
+  }
+}
+
 class HttpUtils {
-  constructor(ctx) {
-    this.ctx = ctx;
+  constructor(logger) {
+    this.logger = logger;
   }
 
   /**
-   * request +熔断器
+   * request + 熔断器
    * @param {String} verb 动词
    * @param {String} url url
    * @param {Object} options 选项
    * @return {Promise<void>}
-   *
-   * 使用demo:
-   * ##### GET请求 ########
-   *1.基本使用
-   * const options={ timeout: 1500, json: true }
-   * const response = await this.ctx.helper.runCircuitVerb('GET', url, options);
-   *
-   * 2.带查询参数:
-   * options.qs={},     eg: http://xxxx?name=123 ==> options.qs={name:'123'}
-   * const options={ timeout: 1500, json: true, qs: { name: '123' } }
-   *
-   * ##### POST请求 ########
-   *1. 基本使用
-   *
    */
   async runCircuitVerb(verb = 'GET', url, options) {
     let command;
@@ -59,19 +52,18 @@ class HttpUtils {
 
     const breaker = new Breaker(command);
     try {
-      this.ctx.logger.info(`外部请求url:${url},options:${JSON.stringify(options)}`);
+      this.logger.debug(`外部请求url:${url},options:${JSON.stringify(options)}`);
       const res = await breaker.runCommand(url, options);
       if (res.statusCode >= 200 && res.statusCode < 300) return res.body;
-      this.ctx.throw(res.statusCode || 500, res.body);
+      throw new ResponseError('', res);
     } catch (err) {
-      // 有关降级的策略 err.message = "CircuitBreaker Open"
+      // TODO:: 有关降级的策略 err.message = "CircuitBreaker Open"
       /* If the circuit is open the command is not run,
        * and an error with message "CircuitBreaker Open" is returned.
        * In this case, you can switch on the error and have a fallback technique
        */
-      console.error(`${verb}:${url} ${err.message}`);
-      this.ctx.logger.error(`${verb}:${url} ${err.message}`);
-      this.ctx.throw(err.status || 500, err.message);
+      this.logger.warn(`${verb}:${url} ${err.message}`);
+      throw err;
     }
   }
 
@@ -84,8 +76,7 @@ class HttpUtils {
    */
   async requestGet(url, qs, options = { timeout: 30000, json: true }) {
     if (qs) options.qs = qs;
-    const response = await this.runCircuitVerb('GET', url, options);
-    return response;
+    return await this.runCircuitVerb('GET', url, options);
   }
 
   /**
@@ -97,8 +88,7 @@ class HttpUtils {
      */
   async requestPost(url, body, options = { timeout: 150000, json: true }) {
     if (body) options.body = body;
-    const response = await this.runCircuitVerb('POST', url, options);
-    return response;
+    return await this.runCircuitVerb('POST', url, options);
   }
 
   /**
@@ -110,8 +100,7 @@ class HttpUtils {
    */
   async requestPut(url, body, options = { timeout: 30000, json: true }) {
     if (body) options.body = body;
-    const response = await this.ctx.helper.runCircuitVerb('PUT', url, options);
-    return response;
+    return await this.runCircuitVerb('PUT', url, options);
   }
   /**
    * 发送http DELETE 请求
@@ -120,8 +109,7 @@ class HttpUtils {
    * @return {Promise<*>} response
    */
   async requestDelete(url, options = { timeout: 30000, json: true }) {
-    const response = await this.ctx.helper.runCircuitVerb('DELETE', url, options);
-    return response;
+    return await this.runCircuitVerb('DELETE', url, options);
   }
 }
 
