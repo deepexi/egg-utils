@@ -5,10 +5,10 @@
 [![Build Status](https://www.travis-ci.org/deepexi/egg-utils.svg?branch=master)](https://www.travis-ci.org/deepexi/egg-utils)
 [![codecov](https://codecov.io/gh/deepexi/egg-utils/branch/master/graph/badge.svg)](https://codecov.io/gh/deepexi/egg-utils)
 
-[npm-image]: https://img.shields.io/npm/v/egg-utils.svg
-[npm-url]: https://www.npmjs.com/package/egg-utils
-[download-image]: https://img.shields.io/npm/dm/egg-utils.svg
-[download-url]: https://www.npmjs.com/package/egg-utils
+[npm-image]: https://img.shields.io/npm/v/@taccisum/egg-utils.svg
+[npm-url]: https://www.npmjs.com/package/@taccisum/egg-utils
+[download-image]: https://img.shields.io/npm/dm/@taccisum/egg-utils.svg
+[download-url]: https://www.npmjs.com/package/@taccisum/egg-utils
 
 <!--
 Description here.
