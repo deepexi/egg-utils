@@ -10,11 +10,7 @@
 [download-image]: https://img.shields.io/npm/dm/@taccisum/egg-utils.svg
 [download-url]: https://www.npmjs.com/package/@taccisum/egg-utils
 
-<!--
-Description here.
--->
-
-### 依赖的插件
+## 依赖的插件
 
 - circuit-fuses v4.x
 - request v2.x
@@ -27,6 +23,16 @@ exports.utils = {
   enable: true,
   package: 'egg-utils',
 };
+```
+
+## 如何使用
+
+### http utils
+
+简单请求：
+
+```js
+const resp = await ctx.helper.http.requestGet('http://www.baidu.com')
 ```
 
 ## License
