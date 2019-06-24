@@ -11,7 +11,7 @@ Contributors guide: https://github.com/eggjs/egg/blob/master/CONTRIBUTING.md
 ##### Checklist
 <!-- Remove items that do not apply. For completed items, change [ ] to [x]. -->
 
-- [ ] `npm test` passes
+- [ ] `npm test` passes and diff coverage over 90%
 - [ ] tests and/or benchmarks are included
 - [ ] documentation is changed or added
 - [ ] commit message follows commit guidelines
