@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const SSEUtils = require('../app/extend/utils/sse_utils');
+const SSEUtils = require('../app/extend/helper/sse_utils');
 
 /* eslint-disable no-new */
 const EventSource = require('eventsource');
