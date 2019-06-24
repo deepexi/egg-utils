@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const SSEUtils = require('../app/extend/helper/sse_utils');
+const SSEUtils = require('../app/extend/utils/sse_utils');
 
 /* eslint-disable no-new */
 const EventSource = require('eventsource');
@@ -110,7 +110,7 @@ function writeEventsInterval(msgs, times = 1000) {
 }
 
 describe('send msg', function() {
-  it('send msg once', function(done) {
+  it('should right when send msg once', function(done) {
     createServer(function(err, server) {
       if (err) return done(err);
 
@@ -124,7 +124,7 @@ describe('send msg', function() {
     });
   });
 
-  it('send msg arr', function(done) {
+  it('should right when send msg arr', function(done) {
     createServer(function(err, server) {
       if (err) return done(err);
       const msgs = [ 'hello', 'world' ];
@@ -145,7 +145,7 @@ describe('send msg', function() {
     });
   });
 
-  it('send msg interval', function(done) {
+  it('should right when send msg interval', function(done) {
     createServer(function(err, server) {
       if (err) return done(err);
       const msgs = [ 'hello', 'world' ];
