@@ -7,5 +7,5 @@ module.exports = {
   get http() {
     return new HttpUtils(this.ctx.logger);
   },
-  SSEUtils,
+  sse: SSEUtils,
 };
