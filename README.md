@@ -36,77 +36,62 @@ const resp = await ctx.helper.http.requestGet('http://www.baidu.com')
 ```
 ### sse utils
 
-#### 注意：node长连接默认2分钟会超时，如服务端连接发送事件的间隔需超过2分钟，需服务端自行处理（设置timeout时间 or 在2分钟的间隔内发送无效事件）
+注意：node长连接默认2分钟会超时，如服务端连接发送事件的间隔需超过2分钟，需服务端自行处理（设置timeout时间 or 在2分钟的间隔内发送无效事件）
 
 #### how to use（示例）
 
 ##### server端
 ###### 单次发送消息（如状态需实时返回给前端）
 ```js
-const SSEUtils = ctx.helper.http.SSEUtils;
-# server为服务端，监听请求
-server.on('request', writeEventsOnce('hello world'));
-function writeEventsOnce(msg) {
-  return (req, res) => {
-    const stream = SSEUtils.send({
-      setResHeader: resHeaders => {
-        res.writeHead(200, resHeaders);
-      },
-      sendType: 'once',
-      onceMsg: msg,
-    });
-
-    res.body = stream.pipe(res);
-  };
+/* router */
+app.get('logs', `/${APP_CONTEXT}/api/v2/logs`, app.controller.v1.getLog);
+/* router */
+const SSEUtils = ctx.helper.sse;
+/* controller */
+async getLog () {
+  const ctx = this.ctx;
+  ctx.body = SSEUtils.send({
+    setResHeader: resHeaders => {
+      ctx.set(resHeaders);
+    },
+    sendType: 'once',
+    onceMsg: 'hello world',
+  });
 }
 ```
 ###### 其他情况发送消息（非单次，或者其他任意情况）
 ```js
-const SSEUtils = ctx.helper.http.SSEUtils;
-# server为服务端，监听请求
-server.on('request', writeEventsInterval('hello world', 1000));
-function writeEventsInterval(msgs, times = 1000) {
-  let interval = null;
-  return (req, res) => {
-    const stream = SSEUtils.send({
-      setResHeader: resHeaders => {
-        res.writeHead(200, resHeaders);
-      },
-      sendType: 'other',
-      sender: send => {
-        let index = 0;
-        interval = setInterval(() => {
-          const msg = index === msgs.length ? 'sseEnd' : msgs[index];
-          send(msg);
+/* router */
+app.get('logs', `/${APP_CONTEXT}/api/v2/logs`, app.controller.v1.getLog);
+/* router */
+const SSEUtils = ctx.helper.sse;
+/* controller */
+async getLog () {
+  const ctx = this.ctx;
+  const msgs = ['hello' 'world'];
+  let interval = null
+  ctx.body = SSEUtils.send({
+    setResHeader: resHeaders => {
+      ctx.writeHead(resHeaders);
+    },
+    sendType: 'other',
+    sender: send => {
+      let index = 0;
+      interval = setInterval(() => {
+        const msg = index === msgs.length ? 'sseEnd' : msgs[index];
+        send(msg);
 
-          if (msg === 'sseEnd') {
-            // 清除事件
-            clearInterval(interval);
-          }
-          index++;
-        }, times);
-      },
-    });
-
-    res.body = stream.pipe(res);
-  };
+        if (msg === 'sseEnd') {
+          // 清除事件
+          clearInterval(interval);
+        }
+        index++;
+      }, 1000); //每秒发送一次消息
+    },
+  })
 }
 ```
 
-##### 客户端
-SSE 的客户端 API 部署在EventSource对象上
-```js 
-const es = new EventSource(server.url);
-es.onmessage = (m) => {
-    #your code，m.data为通讯信息
-};
-#可以接收其他的事件，如接收sseEnd事件，代表通讯结束
-es.addEventListener('sseEnd', (event) => {
-    #your code 
-  }, false);
-#客户端可主动结束通讯
-es.close()
-```
 #### API
 ##### Methods
 |   方法明   | 说明 | 参数 |
