@@ -34,6 +34,71 @@ exports.utils = {
 ```js
 const resp = await ctx.helper.http.requestGet('http://www.baidu.com')
 ```
+### sse utils
+
+注意：node长连接默认2分钟会超时，如服务端连接发送事件的间隔需超过2分钟，需服务端自行处理（设置timeout时间 or 在2分钟的间隔内发送无效事件）
+
+#### how to use（示例）
+
+##### server端
+###### 单次发送消息（如状态需实时返回给前端）
+```js
+/* router */
+app.get('logs', `/${APP_CONTEXT}/api/v2/logs`, app.controller.v1.getLog);
+/* router */
+const SSEUtils = ctx.helper.sse;
+/* controller */
+async getLog () {
+  const ctx = this.ctx;
+  ctx.body = SSEUtils.send({
+    setResHeader: resHeaders => {
+      ctx.set(resHeaders);
+    },
+    sendType: 'once',
+    onceMsg: 'hello world',
+  });
+}
+```
+###### 其他情况发送消息（非单次，或者其他任意情况）
+```js
+/* router */
+app.get('logs', `/${APP_CONTEXT}/api/v2/logs`, app.controller.v1.getLog);
+/* router */
+const SSEUtils = ctx.helper.sse;
+/* controller */
+async getLog () {
+  const ctx = this.ctx;
+  const msgs = ['hello' 'world'];
+  let interval = null
+  ctx.body = SSEUtils.send({
+    setResHeader: resHeaders => {
+      ctx.writeHead(resHeaders);
+    },
+    sendType: 'other',
+    sender: send => {
+      let index = 0;
+      interval = setInterval(() => {
+        const msg = index === msgs.length ? 'sseEnd' : msgs[index];
+        send(msg);
+
+        if (msg === 'sseEnd') {
+          // 清除事件
+          clearInterval(interval);
+        }
+        index++;
+      }, 1000); //每秒发送一次消息
+    },
+  })
+}
+```
+
+#### API
+##### Methods
+|   方法明   | 说明 | 参数 |
+| :--: | :--: | ---- |
+| send | 与客户端建立长连接,返回值是 stream对象 | optsions选项<br />options.setResHeader 设置请求头function，required<br />options.sendType once单次 repeat重复 other其他，默认发送一次<br />options.sender 消息发送者，处理什么时候发送消息和结束发送消息，参数sendMsg func，非一次使用<br />options.onceMsg 单次发送消息主体，默认是''<br />options.retry 长连接发送错误时，重试频率，毫秒, 默认10s |
+
+
 
 ## License
 
