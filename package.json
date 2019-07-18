@@ -48,7 +48,8 @@
   },
   "files": [
     "app",
-    "config"
+    "config",
+    "commitlint.config.js"
   ],
   "husky": {
     "hooks": {
