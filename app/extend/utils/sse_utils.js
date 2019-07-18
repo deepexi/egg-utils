@@ -29,7 +29,7 @@ class SSEUtils {
       sender,
       onceMsg = '',
       retry = 10000,
-      msgReplace = ''
+      msgReplace = '',
     } = options;
     if (typeof setResHeader !== 'function') {
       throw new Error('请传入setResHeader！');
@@ -43,18 +43,17 @@ class SSEUtils {
       Connection: 'keep-alive',
     });
 
-    // 转换流
-
     const streamOptions = {
-      "highWaterMark": 1024*1024*1024 //默认缓冲区大小
-    }
+      'highWaterMark': 1024*1024*1024 // 默认缓冲区大小
+    };
+
     // 增加stream参数
     const stream = new PassThrough(Object.assign(streamOptions, options.streamOptions));
 
     // 替换换行符
     const replaceMsg = (msg = '') => {
-      return msg.replace(/\n/g, '\r').replace(/\r/g, msgReplace)
-    }
+      return msg.replace(/\n/g, '\r').replace(/\r/g, msgReplace);
+    };
 
     const endCall = () => {
       stream.write('event: sseEnd\n');
