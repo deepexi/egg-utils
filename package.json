@@ -1,6 +1,6 @@
 {
   "name": "@taccisum/egg-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "deepexi utils for eggjs",
   "eggPlugin": {
     "name": "utils"
