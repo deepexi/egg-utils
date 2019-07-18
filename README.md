@@ -94,9 +94,9 @@ async getLog () {
 
 #### API
 ##### Methods
-|   方法明   | 说明 | 参数 |
+|   方法名   | 说明 | 参数 |
 | :--: | :--: | ---- |
-| send | 与客户端建立长连接,返回值是 stream对象 | optsions选项<br />options.setResHeader 设置请求头function，required<br />options.sendType once单次 repeat重复 other其他，默认发送一次<br />options.sender 消息发送者，处理什么时候发送消息和结束发送消息，参数sendMsg func，非一次使用<br />options.onceMsg 单次发送消息主体，默认是''<br />options.retry 长连接发送错误时，重试频率，毫秒, 默认10s |
+| send | 与客户端建立长连接,返回值是 stream对象 | optsions选项<br />options.setResHeader 设置请求头function，required<br />options.sendType once单次 repeat重复 other其他，默认发送一次<br />options.sender 消息发送者，处理什么时候发送消息和结束发送消息，参数send func，结束需要发送'sseEnd'消息，非一次使用<br />options.onceMsg 单次发送消息主体，默认是''<br />options.retry 长连接发送错误时，重试频率，毫秒, 默认10s<br/> options.msgReplace 无法处理消息带换行符的情况，提供替换的正则，默认为'' |
 
 
 
