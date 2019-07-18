@@ -15,7 +15,15 @@
 - circuit-fuses v4.x
 - request v2.x
 
-## 开启插件
+## 如何使用
+
+添加依赖
+
+```bash
+$ npm i @taccisum/egg-utils --save
+```
+
+开启插件
 
 ```js
 // config/plugin.js
@@ -24,8 +32,6 @@ exports.utils = {
   package: 'egg-utils',
 };
 ```
-
-## 如何使用
 
 ### http utils
 
@@ -38,7 +44,7 @@ const resp = await ctx.helper.http.requestGet('http://www.baidu.com')
 
 注意：node长连接默认2分钟会超时，如服务端连接发送事件的间隔需超过2分钟，需服务端自行处理（设置timeout时间 or 在2分钟的间隔内发送无效事件）
 
-#### how to use（示例）
+#### 使用示例
 
 ##### server端
 ###### 单次发送消息（如状态需实时返回给前端）
