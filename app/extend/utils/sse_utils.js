@@ -44,6 +44,7 @@ class SSEUtils {
     });
 
     // 转换流
+
     const streamOptions = {
       "highWaterMark": 1024*1024*1024 //默认缓冲区大小
     }
