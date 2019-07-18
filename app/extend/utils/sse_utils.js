@@ -44,7 +44,7 @@ class SSEUtils {
     });
 
     const streamOptions = {
-      'highWaterMark': 1024*1024*1024 // 默认缓冲区大小
+      highWaterMark: 1024 * 1024 * 1024, // 默认缓冲区大小
     };
 
     // 增加stream参数
