@@ -33,7 +33,7 @@ function configureServer(server, protocol, port, callback) {
     });
     oldClose.call(this, function() {
       servers.splice(servers.indexOf(server), 1);
-      closeCb();
+      closeCb && closeCb();
     });
   };
 
@@ -48,7 +48,7 @@ function configureServer(server, protocol, port, callback) {
   });
 }
 
-function writeEventsOnce(msg) {
+function writeEventsOnce(msg, finishCb) {
   return (req, res) => {
     const stream = SSEUtils.send({
       setResHeader: resHeaders => {
@@ -56,6 +56,7 @@ function writeEventsOnce(msg) {
       },
       sendType: 'once',
       onceMsg: msg,
+      finishCb,
     });
 
     res.body = stream.pipe(res);
@@ -82,7 +83,7 @@ function writeEventsArr(msgs) {
     res.body = stream.pipe(res);
   };
 }
-function writeEventsInterval(msgs, times = 1000) {
+function writeEventsInterval(msgs, times = 1000, finishCb) {
   let interval = null;
   return (req, res) => {
     const stream = SSEUtils.send({
@@ -103,6 +104,7 @@ function writeEventsInterval(msgs, times = 1000) {
           index++;
         }, times);
       },
+      finishCb,
     });
 
     res.body = stream.pipe(res);
@@ -163,6 +165,53 @@ describe('send msg', function() {
           server.close(done);
         }
       };
+    });
+  });
+});
+
+describe('sse finishCb', function() {
+  it('should right when send msg once finishCb', function(done) {
+    createServer(function(err, server) {
+      if (err) return done(err);
+
+      let finishFlag = false;
+      server.on('request', writeEventsOnce('hello world', () => {
+        finishFlag = true; // stream关闭标签
+        assert.equal(true, finishFlag);
+        done();
+      }));
+
+      // const es = new EventSource(server.url);
+
+      const es = new EventSource(server.url);
+      es.onmessage = () => {};
+
+      // 主动关闭http request
+      setTimeout(() => {
+        server.close();
+      }, 100);
+    });
+  });
+
+  it('should right when send msg interval finishCb', function(done) {
+    createServer(function(err, server) {
+      if (err) return done(err);
+      const msgs = [ 'finish01', 'finish02', 'finish03' ];
+      let finishFlag = false;
+      server.on('request', writeEventsInterval(msgs, 100, () => {
+        finishFlag = true;
+        assert.equal(true, finishFlag);
+        done();
+        // assert.equal(true, finishFlag);
+      }));
+
+      const es = new EventSource(server.url);
+      es.onmessage = () => {};
+
+      // 主动关闭http request
+      setTimeout(() => {
+        server.close();
+      }, 100);
     });
   });
 });
