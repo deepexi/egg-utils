@@ -1,6 +1,6 @@
 {
   "name": "@taccisum/egg-utils",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "deepexi utils for eggjs",
   "eggPlugin": {
     "name": "utils"
@@ -26,7 +26,11 @@
     "egg-mock": "^3.21.0",
     "eslint": "^5.13.0",
     "eslint-config-egg": "^7.1.0",
-    "eventsource": "^1.0.7"
+    "eventsource": "^1.0.7",
+    "@commitlint/cli": "^8.0.0",
+    "@commitlint/config-conventional": "^8.0.0",
+    "husky": "^2.7.0",
+    "standard-version": "^6.0.1"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -38,12 +42,21 @@
     "lint": "eslint .",
     "ci": "egg-bin pkgfiles --check && npm run lint && npm run cov",
     "pkgfiles": "egg-bin pkgfiles",
-    "autod": "autod"
+    "autod": "autod",
+    "commit": "npx git-cz",
+    "release": "standard-version"
   },
   "files": [
     "app",
-    "config"
+    "config",
+    "commitlint.config.js"
   ],
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "npm test"
+    }
+  },
   "ci": {
     "version": "8, 10"
   },
