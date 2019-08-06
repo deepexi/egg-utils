@@ -1,9 +1,9 @@
 /**
  * author:  qiye
  * createTime:    2019-06-12
- * updateTime:    2019-07-18
+ * updateTime:    2019-08-06
  * desc:    sse utils
- * version: 0.0.5
+ * version: 0.0.6
  */
 
 'use strict';
@@ -20,9 +20,10 @@ class SSEUtils {
    * @param {String} options.onceMsg 单次发送消息主体，默认是''
    * @param {Number} options.retry 长连接发送错误时，重试频率，毫秒, 默认10s
    * @param {RegExp} options.msgReplace 无法处理消息带换行符的情况，提供替换的正则，默认为''
+   * @param {Function} options.finishCb stream主动关闭时，回调function
    * @return {Object} stream 流对象
    */
-  static send(options) {
+  static send(options = {}) {
     const {
       setResHeader,
       sendType = 'once',
@@ -30,6 +31,7 @@ class SSEUtils {
       onceMsg = '',
       retry = 10000,
       msgReplace = '',
+      finishCb,
     } = options;
     if (typeof setResHeader !== 'function') {
       throw new Error('请传入setResHeader！');
@@ -43,6 +45,7 @@ class SSEUtils {
       Connection: 'keep-alive',
     });
 
+    // 转换流
     const streamOptions = {
       highWaterMark: 1024 * 1024 * 1024, // 默认缓冲区大小
     };
@@ -54,6 +57,13 @@ class SSEUtils {
     const replaceMsg = (msg = '') => {
       return msg.replace(/\n/g, '\r').replace(/\r/g, msgReplace);
     };
+
+    // 监听stream finish事件
+    stream.on('finish', () => {
+      if (typeof finishCb === 'function') {
+        finishCb.call(this);
+      }
+    });
 
     const endCall = () => {
       stream.write('event: sseEnd\n');
