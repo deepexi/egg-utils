@@ -58,15 +58,21 @@ class SSEUtils {
       return msg.replace(/\n/g, '\r').replace(/\r/g, msgReplace);
     };
 
+    // stream 是否可写
+    const isStreamWritable = () => {
+      return stream && stream.writable;
+    };
+
     // 监听stream finish事件
     stream.on('finish', () => {
       if (typeof finishCb === 'function') {
         finishCb.call(this);
+        stream.end();
       }
     });
 
     const endCall = () => {
-      if (!stream.writable) {
+      if (!isStreamWritable()) {
         return;
       }
       stream.write('event: sseEnd\n');
@@ -77,7 +83,7 @@ class SSEUtils {
 
     // 消息发送一次
     const sendOnce = (onceMsg = '') => {
-      if (!stream.writable) {
+      if (!isStreamWritable()) {
         return;
       }
       // 声明消息id合重连时间
@@ -91,7 +97,7 @@ class SSEUtils {
 
     // 其他频率发送消息，msg为sseEnd，则结束发送消息
     const sendMsg = msg => {
-      if (!stream.writable) {
+      if (!isStreamWritable()) {
         return;
       }
       if (msg === 'sseEnd') {
