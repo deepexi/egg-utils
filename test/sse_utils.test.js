@@ -181,8 +181,6 @@ describe('sse finishCb', function() {
         done();
       }));
 
-      // const es = new EventSource(server.url);
-
       const es = new EventSource(server.url);
       es.onmessage = () => {};
 
@@ -215,3 +213,55 @@ describe('sse finishCb', function() {
     });
   });
 });
+
+describe('sse error', function() {
+  it('should error when send msg do not provide setResHeader option', function(done) {
+    createServer(function(err, server) {
+      if (err) return done(err);
+
+      let errorFlag = false;
+      server.on('request', (req, res) => {
+        try {
+          const stream = SSEUtils.send({
+            sendType: 'other',
+          });
+          res.body = stream.pipe(res);
+        } catch (e) {
+          console.log('err111111111:', e);
+          errorFlag = true;
+          assert.equal(true, errorFlag);
+          done();
+        }
+      });
+      const es = new EventSource(server.url);
+      es.onmessage = () => {};
+    });
+  });
+
+  it('should error when send other type msg do not provide sender option', function(done) {
+    createServer(function(err, server) {
+      if (err) return done(err);
+
+      let errorFlag = false;
+      server.on('request', (req, res) => {
+        try {
+          const stream = SSEUtils.send({
+            setResHeader: resHeaders => {
+              res.writeHead(200, resHeaders);
+            },
+            sendType: 'other',
+          });
+          res.body = stream.pipe(res);
+        } catch (e) {
+          console.log('err222222:', e);
+          errorFlag = true;
+          assert.equal(true, errorFlag);
+          done();
+        }
+      });
+      const es = new EventSource(server.url);
+      es.onmessage = () => {};
+    });
+  });
+});
+
