@@ -200,7 +200,6 @@ describe('sse finishCb', function() {
         finishFlag = true;
         assert.equal(true, finishFlag);
         done();
-        // assert.equal(true, finishFlag);
       }));
 
       const es = new EventSource(server.url);
@@ -209,7 +208,7 @@ describe('sse finishCb', function() {
       // 主动关闭http request
       setTimeout(() => {
         server.close();
-      }, 100);
+      }, 200);
     });
   });
 });
@@ -227,7 +226,6 @@ describe('sse error', function() {
           });
           res.body = stream.pipe(res);
         } catch (e) {
-          console.log('err111111111:', e);
           errorFlag = true;
           assert.equal(true, errorFlag);
           done();
@@ -253,7 +251,6 @@ describe('sse error', function() {
           });
           res.body = stream.pipe(res);
         } catch (e) {
-          console.log('err222222:', e);
           errorFlag = true;
           assert.equal(true, errorFlag);
           done();
