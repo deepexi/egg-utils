@@ -62,12 +62,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eggjs/egg-utils.git"
+    "url": "https://github.com/deepexi/egg-utils"
   },
   "bugs": {
-    "url": "https://github.com/eggjs/egg/issues"
+    "url": "https://github.com/deepexi/egg-utils/issues"
   },
-  "homepage": "https://github.com/eggjs/egg-utils#readme",
+  "homepage": "https://github.com/deepexi/egg-utils#readme",
   "author": "taccisum",
   "license": "MIT"
 }
