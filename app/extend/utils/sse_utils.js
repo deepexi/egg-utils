@@ -1,9 +1,9 @@
 /**
  * author:  qiye
  * createTime:    2019-06-12
- * updateTime:    2019-07-18
+ * updateTime:    2019-08-07
  * desc:    sse utils
- * version: 0.0.5
+ * version: 0.0.7
  */
 
 'use strict';
@@ -20,9 +20,10 @@ class SSEUtils {
    * @param {String} options.onceMsg 单次发送消息主体，默认是''
    * @param {Number} options.retry 长连接发送错误时，重试频率，毫秒, 默认10s
    * @param {RegExp} options.msgReplace 无法处理消息带换行符的情况，提供替换的正则，默认为''
+   * @param {Function} options.finishCb stream主动关闭时，回调function
    * @return {Object} stream 流对象
    */
-  static send(options) {
+  static send(options = {}) {
     const {
       setResHeader,
       sendType = 'once',
@@ -30,6 +31,7 @@ class SSEUtils {
       onceMsg = '',
       retry = 10000,
       msgReplace = '',
+      finishCb,
     } = options;
     if (typeof setResHeader !== 'function') {
       throw new Error('请传入setResHeader！');
@@ -43,6 +45,7 @@ class SSEUtils {
       Connection: 'keep-alive',
     });
 
+    // 转换流
     const streamOptions = {
       highWaterMark: 1024 * 1024 * 1024, // 默认缓冲区大小
     };
@@ -55,7 +58,23 @@ class SSEUtils {
       return msg.replace(/\n/g, '\r').replace(/\r/g, msgReplace);
     };
 
+    // stream 是否可写
+    const isStreamWritable = () => {
+      return stream && stream.writable;
+    };
+
+    // 监听stream finish事件
+    stream.on('finish', () => {
+      if (typeof finishCb === 'function') {
+        finishCb.call(this);
+        stream.end();
+      }
+    });
+
     const endCall = () => {
+      if (!isStreamWritable()) {
+        return;
+      }
       stream.write('event: sseEnd\n');
       stream.write('data: \n\n'); // 多发一条信息，是sseEnd事件能成功被接收
       // 关闭stream
@@ -64,6 +83,9 @@ class SSEUtils {
 
     // 消息发送一次
     const sendOnce = (onceMsg = '') => {
+      if (!isStreamWritable()) {
+        return;
+      }
       // 声明消息id合重连时间
       stream.write(`id: ${+new Date()}\n`); // 消息ID
       stream.write(`retry: ${retry || 10000}\n`); // 重连时间，默认10s
@@ -75,6 +97,9 @@ class SSEUtils {
 
     // 其他频率发送消息，msg为sseEnd，则结束发送消息
     const sendMsg = msg => {
+      if (!isStreamWritable()) {
+        return;
+      }
       if (msg === 'sseEnd') {
         endCall.call(this);
         return;
