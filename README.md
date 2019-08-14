@@ -136,8 +136,9 @@ CryptoUtils.aesDecrypt(data, secretKey, iv);
 
 ##### aes加解密对象
 ```js
-getCipheriv(algorithm, secretKey, iv);
-getDecipheriv(algorithm, secretKey, iv);
+const CryptoUtils = ctx.helper.crypto;
+CryptoUtils.getCipheriv(algorithm, secretKey, iv);
+CryptoUtils.getDecipheriv(algorithm, secretKey, iv);
 ```
 
 ## License
