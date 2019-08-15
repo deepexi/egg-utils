@@ -107,7 +107,39 @@ async getLog () {
 | :--: | :--: | ---- |
 | send | 与客户端建立长连接,返回值是 stream对象 | optsions选项<br />options.setResHeader 设置请求头function，required<br />options.sendType once单次 repeat重复 other其他，默认发送一次<br />options.sender 消息发送者，处理什么时候发送消息和结束发送消息，参数send func，结束需要发送'sseEnd'消息，非一次使用<br />options.onceMsg 单次发送消息主体，默认是''<br />options.retry 长连接发送错误时，重试频率，毫秒, 默认10s<br /> options.msgReplace 无法处理消息带换行符的情况，提供替换的正则，默认为''<br /> options.finishCb stream结束时钩子函数 |
 
+### crypto utils
 
+#### 使用示例
+
+##### md5加密
+```js
+const CryptoUtils = ctx.helper.crypto;
+const hashData = CryptoUtils.md5('data', 'salt');
+```
+##### aes加密
+```js
+const CryptoUtils = ctx.helper.crypto;
+const data = 'data';
+const secretKey = 'secretKeyDataKey';   // 秘钥必须16位
+const iv = 'secretKeyDataKey';          // 初始向量 initial vector 必须16位
+CryptoUtils.aesEncrypt(data, secretKey, iv);
+```
+
+##### aes解密
+```js
+const CryptoUtils = ctx.helper.crypto;
+const data = 'data';
+const secretKey = 'secretKeyDataKey';   // 加密时的秘钥 必须16位
+const iv = 'secretKeyDataKey';          // 加密时的初始向量 initial vector 必须16位
+CryptoUtils.aesDecrypt(data, secretKey, iv);
+```
+
+##### aes加解密对象
+```js
+const CryptoUtils = ctx.helper.crypto;
+CryptoUtils.getCipheriv(algorithm, secretKey, iv);
+CryptoUtils.getDecipheriv(algorithm, secretKey, iv);
+```
 
 ## License
 
