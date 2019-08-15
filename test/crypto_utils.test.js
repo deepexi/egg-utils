@@ -19,7 +19,7 @@ describe('#crypto_utils.js', () => {
   it('should be throw error', function() {
     assert.throws(() => {
       DigestUtils.md5({ data: 'data' }, 'dada');
-    }, false);
+    });
   });
 
   it('should be throw error salt is must be string', function() {
@@ -64,7 +64,7 @@ describe('#crypto_utils.js', () => {
     const aes = DigestUtils.aesEncrypt('data', 'abcdabcdabcdabcd', 'abcdabcdabcdabcd');
     assert.throws(() => {
       DigestUtils.aesDecrypt({ aes }, 'abcdabcdabcdabda', 'abcdabcdabcdabcd');
-    }, false);
+    });
   });
 
 
